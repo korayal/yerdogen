@@ -4,8 +4,9 @@
 - Build with `stack build`
 - Run `stack exec yerdogen` and enter the template string
 
-`#` -> Numerical characters
-`*` -> Alphanumerical characters
+`#`: Numerical characters
+
+`*`: Alphanumerical characters
 
 Example usage:
 
