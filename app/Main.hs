@@ -6,35 +6,35 @@ import System.Environment (getArgs)
 import Test.QuickCheck
 import Test.QuickCheck.Random
 import Test.QuickCheck.Gen
+import Control.Monad
 
 main :: IO ()
 main = do
   seed <- newQCGen
-  -- putStrLn "Enter the template : "
-  -- template <- getLine
-  -- putStrLn "How many do you need : "
-  -- num <- getLine
   args <- getArgs
-  mapM_ putStrLn $ take (read $ args !! 0) $ multiYerdoStream seed (args !! 1)
+  let result = sequence $ take (read $ args !! 0) $ multiYerdoStream' (args !! 1)
+  mapM_ putStrLn $ unGen result seed 9999999
 
 randomAlphaNum :: Gen Char
 randomAlphaNum = elements (['A'..'Z'] ++ ['0'..'9'])
 
 randomNum :: Gen Char
-randomNum = elements (['0'..'9'])
+randomNum = elements ['0'..'9']
 
 randomAlpha :: Gen Char
-randomAlpha = elements (['A'..'Z'])
+randomAlpha = elements ['A'..'Z']
 
-yerdoGen :: QCGen -> [Char] -> ([Char], QCGen)
-yerdoGen qcg [] = ([], qcg)
-yerdoGen qcg (x:xs) = let (_, nextqcg) = next qcg
-                          (str, finalqcg) = yerdoGen nextqcg xs
-                       in case x of
-                         '*' -> ((unGen randomAlphaNum qcg 9999999) : str, finalqcg)
-                         '$' -> ((unGen randomNum qcg 9999999) : str, finalqcg)
-                         other ->  (x : str, finalqcg)
+randomSame :: a -> Gen a
+randomSame a = elements [a]
 
-multiYerdoStream :: QCGen -> [Char] -> [String]
-multiYerdoStream qcg template = let (str, nextqcg) = yerdoGen qcg template
-                                in str : multiYerdoStream nextqcg template
+templateToGenSeq :: [Char] -> Gen [Char]
+templateToGenSeq = sequence . go
+  where go [] = []
+        go (x:xs) = case x of
+          '*' -> randomAlphaNum : (go xs)
+          '#' -> randomNum : (go xs)
+          '~' -> randomAlpha : (go xs)
+          _ -> (randomSame x) : (go xs)
+
+multiYerdoStream' :: [Char] -> [Gen [Char]]
+multiYerdoStream' = repeat . templateToGenSeq
