@@ -2,6 +2,7 @@ module Main where
 
 import Lib
 import System.Random
+import System.Environment (getArgs)
 import Test.QuickCheck
 import Test.QuickCheck.Random
 import Test.QuickCheck.Gen
@@ -9,11 +10,12 @@ import Test.QuickCheck.Gen
 main :: IO ()
 main = do
   seed <- newQCGen
-  putStrLn "Enter the template : "
-  template <- getLine
-  putStrLn "How many do you need : "
-  num <- getLine
-  mapM_ putStrLn $ take (read $ num :: Int) $ multiYerdoStream seed template
+  -- putStrLn "Enter the template : "
+  -- template <- getLine
+  -- putStrLn "How many do you need : "
+  -- num <- getLine
+  args <- getArgs
+  mapM_ putStrLn $ take (read $ args !! 0) $ multiYerdoStream seed (args !! 1)
 
 randomAlphaNum :: Gen Char
 randomAlphaNum = elements (['A'..'Z'] ++ ['0'..'9'])
