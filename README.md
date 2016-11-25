@@ -2,7 +2,7 @@
 
 - Install [stack](http://www.haskellstack.org)
 - Build with `stack build`
-- Run `stack exec yerdogen -- 10 '***$$$'`
+- Run `stack exec yerdogen -- 10 '***###`
 
 for template string:
 - #: Numerical characters
